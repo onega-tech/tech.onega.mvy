@@ -1,0 +1,74 @@
+#!/bin/sh
+
+MAVEN_HOME_LOCAL="$HOME/app/maven"
+MAVEN_DOWNLOAD_URL="https://dlcdn.apache.org/maven/maven-3/3.9.8/binaries/apache-maven-3.9.8-bin.tar.gz"
+MVY_HOME_LOCAL="$HOME/app/mvy"
+MVY_DOWNLOAD_URL="file:///home/ion/src/trunk/onega/mvy/target/mvy.jar"
+TMP_DIR="/tmp/mvy_`id -u`"
+
+#################################################################################
+if [ "$MVY_PURGE_LOCAL" = "true" ] ; then 
+  echo "[INFO] - PURGE - MAVEN_HOME_LOCAL - $MAVEN_HOME_LOCAL"
+  rm -rf $MAVEN_HOME_LOCAL
+  echo "[INFO] - PURGE - MVY_HOME_LOCAL - $MVY_HOME_LOCAL"
+  rm -rf $MVY_HOME_LOCAL
+fi
+
+if [ -z "$JAVA_HOME" ] ; then
+  echo "[ERROR] - JAVA_HOME environment variable is not defined" >&2
+  exit 1
+elif [ ! -d "$JAVA_HOME" ]; then
+  echo "[ERROR] - JAVA_HOME($JAVA_HOME) directory is not exist" >&2
+  exit 1
+fi
+
+if [ -z "$MAVEN_HOME" ] ; then
+  echo "[INFO] - MAVEN_HOME environment variable is not defined. Try to use MAVEN_HOME_LOCAL"
+  if [ ! -d "$MAVEN_HOME_LOCAL" ]; then
+    echo "[INFO] - MAVEN_HOME_LOCAL($MAVEN_HOME_LOCAL) directory is not exist."
+    echo "[INFO] - Try to download and install maven from $MAVEN_DOWNLOAD_URL"
+    echo "[INFO] - TMP_DIR=$TMP_DIR"
+    rm -rf $TMP_DIR
+    mkdir -p $TMP_DIR
+    curl -o "$TMP_DIR/maven.tar.gz" $MAVEN_DOWNLOAD_URL
+    mkdir -p $TMP_DIR/maven
+    tar -xf $TMP_DIR/maven.tar.gz -C $TMP_DIR/maven
+    maven_arc_dir=`ls $TMP_DIR/maven -AU | head -1`
+    mkdir -p $MAVEN_HOME_LOCAL
+    cp -rf "$TMP_DIR/maven/$maven_arc_dir"/* $MAVEN_HOME_LOCAL
+    chmod +x $MAVEN_HOME_LOCAL/bin/mvn
+    echo "[INFO] - Maven successfully downloaded"
+    $MAVEN_HOME_LOCAL/bin/mvn -version
+    rm -rf $TMP_DIR
+  fi
+  MAVEN_HOME=$MAVEN_HOME_LOCAL
+fi
+
+if [ -z "$MVY_HOME" ] ; then
+  echo "[INFO] - MVY_HOME environment variable is not defined. Try to use MVY_HOME_LOCAL"
+  if [ ! -d "$MVY_HOME_LOCAL" ]; then
+    echo "[INFO] - MVY_HOME_LOCAL($MVY_HOME_LOCAL) directory is not exist."
+    echo "[INFO] - Try to download and install mvy from $MVY_DOWNLOAD_URL"
+    echo "[INFO] - TMP_DIR=$TMP_DIR"
+    rm -rf $TMP_DIR
+    mkdir -p $TMP_DIR/mvy
+    curl -o "$TMP_DIR/mvy/mvy.jar" $MVY_DOWNLOAD_URL
+    mkdir -p $MVY_HOME_LOCAL
+    cp -rf "$TMP_DIR/mvy/"* $MVY_HOME_LOCAL
+    $JAVA_HOME/bin/java -jar $MVY_HOME_LOCAL/mvy.jar version
+    rm -rf $TMP_DIR
+  fi
+  MVY_HOME=$MVY_HOME_LOCAL
+fi
+
+#################################################################################
+export JAVA_HOME
+export MAVEN_HOME
+export MVY_HOME
+echo "[INFO] - JAVA_HOME=$JAVA_HOME"
+echo "[INFO] - MAVEN_HOME=$MAVEN_HOME"
+echo "[INFO] - MVY_HOME=$MVY_HOME"
+echo ""
+#################################################################################
+
+$JAVA_HOME/bin/java -jar $MVY_HOME/mvy.jar $@

@@ -1,0 +1,103 @@
+ngbModel: 1.0.0
+artifact: com.ringcentral.cc:icb-common-parent:1-SNAPSHOT
+java: 17
+packaging: pom
+
+properties:
+  version.jackson: 2.13.0
+  
+modules:
+  - icb-common-lib
+  - icb-common-app
+  - icb-common-client
+  - icb-common-jwt
+  - icb-common-csv
+  - icb-common-xlsx
+  - icb-common-orc
+  - icb-common-dlock
+  - icb-common-dlock-k8s
+  - icb-common-test
+  - icb-common-aws
+  - icb-common-aws-test
+  - icb-common-rocksdb
+  
+dependencies:
+  repositories:
+    engage-nexus-public:
+      url: https://nexus.lab.engage.int.ringcentral.com/repository/maven-public
+      releases.enabled: true
+      snapshots.enabled: false
+    engage-nexus-releases:
+      url: https://nexus.lab.engage.int.ringcentral.com/repository/maven-releases
+      releases.enabled: true
+      releases.updatePolicy: always
+      snapshots.eanbled: false
+    engage-nexus-snapshots:
+      url: https://nexus.lab.engage.int.ringcentral.com/repository/maven-snapshots
+      releases.enabled: false
+      snapshots.eanbled: true
+      snapshots.updatePolicy: always
+  management:
+    - com.fasterxml.jackson.core:jackson-core:${version.jackson}
+    - com.fasterxml.jackson.core:jackson-databind:${version.jackson}
+    - com.fasterxml.jackson.datatype:jackson-datatype-guava:${version.jackson}
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${version.jackson}
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${version.jackson}
+    - com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${version.jackson}
+    - com.fasterxml.jackson.core:jackson-annotations:${version.jackson}
+    - com.google.guava:guava:31.0.1-jre
+    - io.swagger.core.v3:swagger-annotations:2.1.11
+    - org.testng:testng:7.4.0
+    - org.testcontainers:testcontainers:1.16.2
+    - ~org.slf4j:slf4j-api
+  compile:
+  test:
+  provided:
+    
+plugins:
+  repositories:
+    engage-nexus-public-plugins:
+      url: https://nexus.lab.engage.int.ringcentral.com/repository/maven-public
+      releases.enabled: true
+      snapshots.enabled: false
+    engage-nexus-releases-plugins:
+      url: https://nexus.lab.engage.int.ringcentral.com/repository/maven-releases
+      releases.enabled: true
+      snapshots.enabled: false
+  management:
+    - artifact: org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M4
+    - artifact: org.jacoco:jacoco-maven-plugin:0.8.7
+    - artifact: org.apache.maven.plugins:maven-deploy-plugin:2.8.2
+    - artifact: org.apache.maven.plugins:maven-compiler-plugin:3.8.1
+    - artifact: org.apache.maven.plugins:maven-source-plugin:3.2.1
+    - artifact: com.diffplug.spotless:spotless-maven-plugin:2.13.0
+      configuration:
+        java.importOrder.order: java,javax,org,com
+        java.removeUnusedImports:
+        java.eclipse.file: spotless/code-style-java.xml
+    - artifact: com.ringcentral.cc:icb-spotless:2.0.0-release
+      scope: compile
+  build:
+    - artifact: org.apache.maven.plugins:maven-surefire-plugin
+    - artifact: org.jacoco:jacoco-maven-plugin
+      executions:
+        prepare:
+          goals: prepare-agent
+        report:
+          phase: test
+          goals: report
+    - artifact: org.apache.maven.plugins:maven-source-plugin
+      executions:
+        attach-sources:
+          goals: report
+    - artifact: com.diffplug.spotless:spotless-maven-plugin
+      executions:
+         check:
+           phase: compile
+           goals: check
+
+          
+# list goals           mvn help:describe -e -Dplugin=surefire
+#list phases           mvn help:describe -Dcmd=compile
+#effective pom      mvn help:effective-pom
+

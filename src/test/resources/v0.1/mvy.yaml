@@ -1,0 +1,55 @@
+mvy: 0.1.0
+artifact: tech.onega:jnb:0.1
+java: 17
+packaging: jar
+
+properties:
+  project-root-dir: ${project.basedir}
+  version.jackson: 2.17.2
+
+dependencies:
+  compile:
+    - artifact: org.slf4j:slf4j-simple:1.7.36
+    - artifact: org.apache.bval:bval-jsr:3.0.0
+    - artifact: jakarta.validation:jakarta.validation-api:3.1.0
+    - artifact: com.fasterxml.jackson.core:jackson-databind:${version.jackson}
+    - artifact: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${version.jackson}
+    - artifact: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${version.jackson}
+    - artifact: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${version.jackson}
+    - artifact: com.fasterxml.jackson.dataformat:jackson-dataformat-properties:${version.jackson}
+    - artifact: com.fasterxml.jackson.core:jackson-annotations:${version.jackson}
+  test:
+    - artifact: org.testng:testng:7.10.2
+  exclusions:
+    - artifact: io.swagger.core.v3:swagger-annotations
+
+repositories:
+  central:
+    url: https://repo1.maven.org/maven2/
+    releasesEnabled: true
+    snapshotsEnabled: false
+
+build:
+  plugins:
+  - plugin: org.apache.maven.plugins:maven-compiler-plugin:3.13.0
+  - plugin: org.apache.maven.plugins:maven-source-plugin:3.3.1
+    executions:
+      - phase: verify
+        goals: jar-no-fork
+  - plugin: com.diffplug.spotless:spotless-maven-plugin:2.43.0
+    configuration:
+      java.importOrder.order: java,javax,org,com
+      java.removeUnusedImports:
+      java.eclipse.file: ${project.basedir}/code-style-java.xml
+      java.eclipse.file@tagName: tagValue
+    inherited: true
+    executions:
+      - phase: compile
+        goals: check
+        configuration:
+          java.importOrder.order: java,javax,org,com
+          java.removeUnusedImports:
+          java.eclipse.file: ${project.basedir}/code-style-java.xml
+    dependencies:
+      - artifact: com.ringcentral.cc:icb-spotless:1.0.1
+

@@ -1,0 +1,7 @@
+parallel: none
+threadCount: 1
+preserveOrder: true
+tests:
+ - name: tech.onega.mvy
+   packages:
+    - tech.onega.mvy.*

@@ -1,0 +1,19 @@
+ngbModel: 1.0.0
+module: icb-common-app
+packaging: jar
+
+properties:
+  version.springdoc: 1.5.10
+  version.logstash: 6.6
+
+dependencies:
+  compile:
+   - com.ringcentral.cc:icb-common-lib
+   - com.ringcentral.cc:icb-common-client
+   - org.springframework.boot:spring-boot-starter-web:${version.spring}
+   - org.springframework.boot:spring-boot-starter-validation:${version.spring}
+   - org.springframework.boot:spring-boot-starter-actuator:${version.spring}
+   - org.springdoc:springdoc-openapi-ui:${version.springdoc}
+   - net.logstash.logback:logstash-logback-encoder:${version.logstash}
+  test:
+   - org.testng:testng

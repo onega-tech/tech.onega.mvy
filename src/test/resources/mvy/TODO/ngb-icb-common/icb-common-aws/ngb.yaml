@@ -1,0 +1,20 @@
+ngbModel: 1.0.0
+module: icb-common-aws
+packaging: jar
+
+properties:
+  version.aws: 2.17.100
+
+dependencies:
+  compile:
+   - com.ringcentral.cc:icb-common-lib
+   - software.amazon.awssdk:dynamodb:${version.aws}
+   - software.amazon.awssdk:sts:${version.aws}
+   - software.amazon.awssdk:s3:${version.aws}
+   - software.amazon.awssdk:athena:${version.aws}
+   - software.amazon.awssdk:glue:${version.aws}
+   - software.amazon.awssdk:apache-client:${version.aws}
+   - ~software.amazon.awssdk:netty-nio-client #exclusions
+  test:
+   - com.ringcentral.cc:icb-common-aws-test
+   - org.testng:testng
